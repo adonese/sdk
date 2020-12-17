@@ -10,7 +10,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class Response implements Serializable, ReponseData {
+public class Response implements Serializable, ReponseData{
+
+
 
     private String responseMessage;
     private String responseStatus;
@@ -21,12 +23,6 @@ public class Response implements Serializable, ReponseData {
     private String clientId;
     private String PAN;
     private Float tranAmount;
-    private String EBSServiceName;
-    private String workingKey;
-    private String toCard;
-    private String toAccount;
-    private String referenceNumber;
-    private String approvalCode;
     private Float tranFee;
     private Float additionalAmount;
     private Float acqTranFee;
@@ -35,21 +31,9 @@ public class Response implements Serializable, ReponseData {
     private String tranCurrency;
     private String paymentInfo;
     private String fromAccount;
-
-    private int responseCode;
-    private String responseMessage;
-
-    private String message;
-    private String code;
-
-    private ErrorMessage errorMessage;
-
     private HashMap<String, Double> balance;
-
     private HashMap<String, String> billInfo;
 
-    public EBSResponse() {
-    }
 
     public HashMap<String, String> getBillInfo() {
         return billInfo;
@@ -133,14 +117,6 @@ public class Response implements Serializable, ReponseData {
         return dateFormat.format(newDate);
     }
 
-    public String getTerminalId() {
-        return terminalId;
-    }
-
-    public Integer getSystemTraceAuditNumber() {
-        return systemTraceAuditNumber;
-    }
-
     public String getClientId() {
         return clientId;
     }
@@ -153,21 +129,6 @@ public class Response implements Serializable, ReponseData {
         return tranAmount;
     }
 
-    public String getEBSServiceName() {
-        return EBSServiceName;
-    }
-
-    public String getWorkingKey() {
-        return workingKey;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public String getCode() {
-        return code;
-    }
 
     public String getEbsError() {
         return errorMessage.getEbsMessage();
@@ -205,84 +166,10 @@ public class Response implements Serializable, ReponseData {
         }
     }
 
-    public String getFromAccount() {
-        return fromAccount;
-    }
-
-    public void setFromAccount(String fromAccount) {
-        this.fromAccount = fromAccount;
-    }
 
     @Override
-    public String getResponse() {
-        return this.responseMessage;
-    }
-
-    @Override
-    public bool isSuccessful() {
+    public boolean isSuccessful() {
         return this.responseCode != 0;
 
-    }
-}
-
-
-/**
- * This class implements (marshals) noebs *all* error classes
- * whether they were stemmed from EBS errors, or other kind of errors
- */
-class ErrorMessage implements Serializable{
-    private String message;
-    private Integer code;
-    private String status;
-    private ErrorDetails details;
-
-    public ErrorMessage(Integer code) {
-
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public Integer getCode() {
-        return code;
-    }
-
-    String getEbsMessage() {
-        return details.getResponseMessage();
-    }
-
-    Integer getEbsCode() {
-        return details.getResponseCode();
-    }
-
-    public String getEbsStatus() {
-        return details.getResponseStatus();
-    }
-
-    boolean isEbsError() {
-        if (details.getResponseCode() == null) {
-            return false;
-        } else {
-            return details.getResponseCode() != 0;
-        }
-    }
-}
-
-class ErrorDetails implements Serializable {
-    private String responseMessage;
-    private String responseStatus;
-    private Integer responseCode;
-
-    public String getResponseMessage() {
-        return responseMessage;
-    }
-
-    public String getResponseStatus() {
-        return responseStatus;
-    }
-
-    public Integer getResponseCode() {
-        return responseCode;
     }
 }

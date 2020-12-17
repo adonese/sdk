@@ -33,12 +33,15 @@ public class Request implements Serializable {
     private String serviceProviderId;
     private String merchantID;
 
+
     public ResponseData NewRequest() {
         Request request = new Request();
+        BaseResponse<SuccessResponse> successBaseResponse = new BaseResponse<>();
+        BaseResponse<ErrorResponse> errorBaseResponse = new BaseResponse<>();
 
-        String encryptedIPIN = new IPINBlockGenerator().getIPINBlock(this.IPIN, key, request.getUuid());
-        request.setServiceProviderId(Constants.CONTRIBUTE_SUDAN); // it is better not to use it this way
-        request.setTranAmount(Float.parseFloat(amount.getText().toString()));
+        String encryptedIPIN = new IPIN().getIPINBlock(this.IPIN, key, request.getUuid());
+        request.setServiceProviderId("12345678"); // it is better not to use it this way
+        request.setTranAmount(this.tranAmount);
         request.setTranCurrencyCode("SDG");
         request.setPan(this.pan);
         request.setExpDate(this.expDate);
@@ -48,11 +51,16 @@ public class Request implements Serializable {
         String json = gson.toJson(request);
         Log.i("MY REQUEST", json);
         JSONObject object = null;
+
         try {
             object = new JSONObject(json);
         } catch (JSONException e) {
             e.printStackTrace();
+            ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), 1000);
+            return errorBaseResponse.setResponse(errorResponse);
         }
+
+
 
         AndroidNetworking.post(request.serverUrl())
                 .addJSONObjectBody(object) // posting java object
@@ -61,7 +69,7 @@ public class Request implements Serializable {
                 .addHeaders("Authorization", this.apiKey)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
-
+                    @overide
                     public void onResponse(JSONObject response) {
                         // do anything with response
                         Log.i("Smoke Response", response.toString());
@@ -72,21 +80,23 @@ public class Request implements Serializable {
                             EBSResponse result = null;
                             try {
                                 result = gson.fromJson(response.get("ebs_response").toString(), type);
-                                Log.i("MY Response", response.toString());
                                 return result;
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
+                                ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), 1000);
+                                return errorBaseResponse.setResponse(errorResponse);
                             }
                         }
 
                     }
                     @Override
                     public void onError(ANError error) {
-                        // handle error
-                        Log.i("Purchase Error", String.valueOf(error.getErrorBody()));
+
                         if (error.getErrorCode() == 504){
                             // handle the error here!
+                            ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), 504);
+                            return errorBaseResponse.setResponse(errorResponse);
                        }
                         Gson gson = new Gson();
                         Type type = new TypeToken<Response>() {
@@ -94,7 +104,7 @@ public class Request implements Serializable {
                         EBSResponse result = null;
                         try {
                             JSONObject obj = new JSONObject(error.getErrorBody());
-                            result = gson.fromJson(obj.get("details").toString(), type);
+                            result = gson.fromJson(obj.get("details"), type);
                             return result;
                             // Model the error response here!
                         } catch (JSONException e) {
@@ -105,13 +115,6 @@ public class Request implements Serializable {
     }
 
 
-    public void setServiceProviderId(String serviceProviderId) {
-        this.serviceProviderId = serviceProviderId;
-    }
-
-    public void setToAccount(String toAccount) {
-        this.toAccount = toAccount;
-    }
 
     public void setPayeeId(String payeeId) {
         this.payeeId = payeeId;
@@ -123,20 +126,6 @@ public class Request implements Serializable {
 
     public void setIPIN(String IPIN) {
         this.IPIN = IPIN;
-    }
-
-
-    public void setMerchantID(String id) {
-        this.merchantID = id;
-    }
-
-
-    public void setNewIPIN(String newIPIN) {
-        this.newIPIN = newIPIN;
-    }
-
-    public void setToCard(String toCard) {
-        this.toCard = toCard;
     }
 
     public void setPan(String pan) {
@@ -171,27 +160,6 @@ public class Request implements Serializable {
         return randomUUIDString;
     }
 
-    public String serverUrl(boolean development) {
-        String host;
-
-        if (development) {
-            host = "beta.soluspay.net/consumer/";
-        } else {
-            host = "beta.soluspay.net/api/consumer/";
-        }
-
-        URIBuilder builder = new URIBuilder();
-        try {
-            // how to handle https ones?
-            // url is: https://beta.soluspay.net/api/
-            builder.setScheme("https")
-                    .setHost(host)
-                    .build();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        return builder.toString();
-    }
 
     public String serverUrl() {
         String host = "beta.soluspay.net/api/consumer/";
@@ -208,13 +176,6 @@ public class Request implements Serializable {
         return builder.toString();
     }
 
-    public String getOtp() {
-        return otp;
-    }
-
-    public void setOtp(String otp) {
-        this.otp = otp;
-    }
 
     public String getIpin() {
         return ipin;
@@ -224,11 +185,5 @@ public class Request implements Serializable {
         this.ipin = ipin;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
 }

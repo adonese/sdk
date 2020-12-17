@@ -1,6 +1,9 @@
 package net.soluspay;
 
-public interface ReponseData {
-    public String getResponse();
+//////Serivce////
+public interface ResponseData {
+    public  BaseResponse<?> getResponse();
     public bool isSuccessful();
 }
+
+

@@ -1,7 +1,5 @@
 package net.soluspay;
 
-package net.soluspay.cashq.utils;
-
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyFactory;
