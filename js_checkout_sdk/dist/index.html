@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" style="background-color: antiquewhite;">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Example</title>
+</head>
+</body>
+
+</html>
+<script src="index.js"></script>
+
+<div id="pay_button" onclick="solus.pay(900)"></div>
+<script>
+  const solus = new SolusPayCheckout({
+    elementID: "pay_button",
+    biller: "ahmed_adlan",
+    to: "https://www.google.com"
+  })
+  solus.initPayButton()
+</script>
+
