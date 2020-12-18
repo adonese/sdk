@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+      "target": "ES5",
+      "module": "System",
+      "strict": true,
+      "esModuleInterop": true,
+      "skipLibCheck": true,
+      "forceConsistentCasingInFileNames": true,
+      "declaration": true,
+      "outDir": "./dist",
+    }
+  }
